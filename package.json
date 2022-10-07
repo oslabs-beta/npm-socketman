@@ -1,0 +1,20 @@
+{
+  "name": "npm-socketman",
+  "version": "0.0.5",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "socket.io",
+    "monitor",
+    "postman",
+    "test"
+  ],
+  "author": "Kyle M",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.5.1"
+  }
+}
