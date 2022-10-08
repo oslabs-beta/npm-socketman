@@ -1,3 +1,5 @@
+// import { Namespace, Socket } from "socket.io";
+// import { Request, Response } from "express";
 const path = require("path");
 const app = require("express")();
 const http = require("http").Server(app);
@@ -10,6 +12,10 @@ const io = require("socket.io")(http, {
     origin: "*",
   },
 });
+
+// const users: Namespace = io.of("/users");
+// const bongo: Namespace = io.of("/bongo");
+// const testnsp: Namespace = io.of("/testnsp");
 
 const users = io.of("/users");
 const bongo = io.of("/bongo");

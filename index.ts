@@ -1,8 +1,10 @@
 const path = require("path");
-import { Socket, Namespace } from "socket.io";
+import { Application } from "express";
+import { Socket, Namespace, Server } from "socket.io";
 // accept a socket.io instance, and an options object
 //creates an endpoint on the server, but we could maybe use vanilla node to add an endpoint by somehow accessing the server via the socket io instance that was passed in
-function setup(express, sioInstance: any, options: {}) {
+//options typed as empty obj FOR NOW. once we utilize it, we can change it
+function setup(express: Application, sioInstance: Server, options: {}) {
   // update options to defaults if missing
 
   // create an endpoint on which to access our GUI
@@ -22,14 +24,14 @@ function setup(express, sioInstance: any, options: {}) {
     payload: any[];
     cb?: Function | null;
     date: Date;
-    // nsp:
-    // rooms:
+    nsp: string;
+    rooms: Set<string>;
   }
   const createEventObj = (
     socketId: string,
     args: any[],
-    nsp,
-    rooms
+    nsp: string,
+    rooms: Set<string>
   ): eventObj => {
     const cb =
       args[args.length - 1] instanceof Function ? args[args.length - 1] : null;
@@ -49,7 +51,7 @@ function setup(express, sioInstance: any, options: {}) {
 
   // loop through namespaces
   // create a namespace on the io instance they passed in
-  const adminNamespace = sioInstance.of("/admin");
+  const adminNamespace: Namespace = sioInstance.of("/admin");
 
   //   adminNamespace.on('connection', (socket) => {
   //     console.log(socket.id);
@@ -59,7 +61,7 @@ function setup(express, sioInstance: any, options: {}) {
   //   });
 
   // get all namespaces on io
-  const allNsps = sioInstance._nsps;
+  const allNsps: Server["_nsps"] = sioInstance._nsps;
 
   // loop through namespaces
   // we HAVE TO DO A FOREACH!! (it's a map or something, not arr or obj) => some iterable of namespaces
@@ -67,11 +69,11 @@ function setup(express, sioInstance: any, options: {}) {
   allNsps.forEach((nsp) => {
     console.log(nsp.name);
     // prepend listener to namespace
-    nsp.on("connection", (socket) => {
+    nsp.on("connection", (socket: Socket): void => {
       // if namespace is anything but admin
       if (nsp !== adminNamespace) {
         // add a listener that will hear all incoming events and send them to admin
-        socket.onAny((...args: any[]) => {
+        socket.onAny((...args: any[]): void => {
           console.log("incoming");
           console.log(nsp.name);
           console.log(socket.id);
@@ -85,7 +87,7 @@ function setup(express, sioInstance: any, options: {}) {
           );
         });
         // add a listener that will hear all outgoing events and send them to admin
-        socket.onAnyOutgoing((...args: any[]) => {
+        socket.onAnyOutgoing((...args: any[]): void => {
           console.log("outgoing");
           console.log(nsp.name);
           console.log(socket.id);
