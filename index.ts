@@ -1,6 +1,7 @@
 const path = require("path");
 import { Application } from "express";
-import { Socket, Namespace, Server } from "socket.io";
+import { Server, Socket, Namespace } from "./node_modules/socket.io/dist/index";
+
 // accept a socket.io instance, and an options object
 //creates an endpoint on the server, but we could maybe use vanilla node to add an endpoint by somehow accessing the server via the socket io instance that was passed in
 //options typed as empty obj FOR NOW. once we utilize it, we can change it
@@ -66,7 +67,7 @@ function setup(express: Application, sioInstance: Server, options: {}) {
   // loop through namespaces
   // we HAVE TO DO A FOREACH!! (it's a map or something, not arr or obj) => some iterable of namespaces
   // for .. in and for .. of don't work!
-  allNsps.forEach((nsp) => {
+  allNsps.forEach((nsp: Namespace) => {
     console.log(nsp.name);
     // prepend listener to namespace
     nsp.on("connection", (socket: Socket): void => {
