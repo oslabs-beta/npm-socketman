@@ -21,6 +21,57 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+  console.log('connected to global');
+  // consider this middleware. this will catch all events and then continue through other "specific" listeners
+  socket.on('send message', (msg) => {
+    io.emit('receive message', msg);
+  });
+  socket.on('test-event', (payload) => {});
+
+  socket.on('change-color', (array, callback) => {
+    let color = [];
+    for (let i = 0; i < 3; i++) {
+      color.push(Math.floor(Math.random() * 256));
+    }
+    color = `rgb(${color.join(', ')})`;
+
+    callback(color);
+  });
+  socket.on('event-3', () => {
+    socket.emit('event-response', 'hello client');
+  });
+  // console.log(socket.handshake);
+  // console.log(socket.rawListeners());
+  // console.log(socket.eventNames());
+});
+
+users.on('connection', (socket) => {
+  console.log('connected to users');
+  // consider this middleware. this will catch all events and then continue through other "specific" listeners
+  socket.on('send message', (msg) => {
+    io.emit('receive message', msg);
+  });
+  socket.on('test-event', (payload) => {});
+
+  socket.on('change-color', (array, callback) => {
+    let color = [];
+    for (let i = 0; i < 3; i++) {
+      color.push(Math.floor(Math.random() * 256));
+    }
+    color = `rgb(${color.join(', ')})`;
+
+    callback(color);
+  });
+  socket.on('event-3', () => {
+    socket.emit('event-response', 'hello client');
+  });
+  // console.log(socket.handshake);
+  // console.log(socket.rawListeners());
+  // console.log(socket.eventNames());
+});
+
+bongo.on('connection', (socket) => {
+  console.log('connected to bongo');
   // consider this middleware. this will catch all events and then continue through other "specific" listeners
   socket.on('send message', (msg) => {
     io.emit('receive message', msg);

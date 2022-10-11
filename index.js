@@ -48,6 +48,7 @@ function setup(express, sioInstance, options) {
   // loop through namespaces
   // we HAVE TO DO A FOREACH!! (it's a map or something, not arr or obj)
   // for .. in and for .. of don't work!
+  console.log('---');
   allNsps.forEach((nsp) => {
     console.log(nsp.name);
     // prepend listener to namespace
@@ -58,6 +59,7 @@ function setup(express, sioInstance, options) {
         socket.onAny((...args) => {
           console.log('incoming');
           console.log(nsp.name);
+          console.log(socket.nsp.name);
           console.log(socket.id);
           //   console.log(
           //     'event_sent',
@@ -85,6 +87,7 @@ function setup(express, sioInstance, options) {
       }
     });
   });
+  console.log('---');
 }
 
 module.exports = setup;
