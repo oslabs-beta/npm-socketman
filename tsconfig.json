@@ -10,7 +10,6 @@
     "allowSyntheticDefaultImports": true,
     //mostly concerned with removing comments from code
     "removeComments": false,
-    "noEmit": false,
     "sourceMap": true,
     "noImplicitReturns": true,
     "noImplicitThis": true
