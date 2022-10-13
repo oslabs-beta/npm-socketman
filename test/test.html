@@ -86,7 +86,7 @@
       var joinNsp = document.getElementById('join-namespace');
 
       event1Btn.addEventListener('click', () => {
-        socket.emit('test-event', 'hello world!');
+        socket.emit('send-message', 'hello world!');
       });
 
       event2Btn.addEventListener('click', () => {
@@ -112,8 +112,25 @@
         }, 3000);
 
         newSocket.on('connect', () => {
+          // demote current socket to old socket
+          const oldsocket = socket;
+          // assign current socket label to new socket
+          socket = newSocket;
+          // close old socket
+          oldsocket.close();
+
           clearTimeout(connectionTimeout);
-          console.log('namespace is =>', newSocket.nsp);
+          console.log('namespace is =>', socket.nsp);
+          header.textContent += '--> ' + socket.id;
+          socket.on('event-response', (arg) => {});
+          socket.on('receive message', function (msg) {
+            var item = document.createElement('li');
+            item.textContent = `${new Date().toLocaleString()} --- ${
+              socket.id
+            } ---${socket.id} --- ${JSON.stringify(msg)}`;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+          });
         });
       });
 

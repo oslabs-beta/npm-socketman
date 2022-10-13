@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    //sets JS engine to common JS - requiring in info
+    "module": "CommonJS",
+    //allows us to use import/export syntac
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    //mostly concerned with removing comments from code
+    "removeComments": false,
+    "sourceMap": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true
+  },
+  //compiling  test.server.ts
+  "files": ["server.ts"],
+  "exclude": ["node_modules"]
+}
