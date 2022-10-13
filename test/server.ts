@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 const path = require("path");
 const app = require("express")();
 const http = require("http").Server(app);
-const setup = require("../index.ts");
+const setup = require("../dist/index.js");
 
 // would be best if the dev didn't have to manually allow CORS from our domain
 const io: Server = require("socket.io")(http, {
