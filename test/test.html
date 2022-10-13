@@ -6,7 +6,7 @@
       body {
         margin: 20px;
         padding-bottom: 3rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
           Helvetica, Arial, sans-serif;
       }
 
@@ -78,30 +78,30 @@
     <script>
       var socket = io();
 
-      var messages = document.getElementById("messages");
-      var header = document.getElementById("header");
-      var event1Btn = document.getElementById("event1");
-      var event2Btn = document.getElementById("event2");
-      var event3Btn = document.getElementById("event3");
-      var joinNsp = document.getElementById("join-namespace");
+      var messages = document.getElementById('messages');
+      var header = document.getElementById('header');
+      var event1Btn = document.getElementById('event1');
+      var event2Btn = document.getElementById('event2');
+      var event3Btn = document.getElementById('event3');
+      var joinNsp = document.getElementById('join-namespace');
 
-      event1Btn.addEventListener("click", () => {
-        socket.emit("send-message", "hello world!");
+      event1Btn.addEventListener('click', () => {
+        socket.emit('send-message', 'hello world!');
       });
 
-      event2Btn.addEventListener("click", () => {
-        socket.emit("change-color", [1, 2, 3], (color) => {
+      event2Btn.addEventListener('click', () => {
+        socket.emit('change-color', [1, 2, 3], (color) => {
           event2Btn.style.backgroundColor = color;
         });
       });
 
-      event3Btn.addEventListener("click", () => {
-        socket.emit("event-3", "payload that is never read");
+      event3Btn.addEventListener('click', () => {
+        socket.emit('event-3', 'payload that is never read');
       });
 
-      joinNsp.addEventListener("click", () => {
-        console.log("clicked nsp");
-        const connectTo = document.URL + prompt("What namespace to join?");
+      joinNsp.addEventListener('click', () => {
+        console.log('clicked nsp');
+        const connectTo = document.URL + prompt('What namespace to join?');
         console.log(connectTo);
         let newSocket = io(connectTo, {});
 
@@ -111,17 +111,34 @@
           alert(`failed to connect to ${connectTo}`);
         }, 3000);
 
-        newSocket.on("connect", () => {
+        newSocket.on('connect', () => {
+          // demote current socket to old socket
+          const oldsocket = socket;
+          // assign current socket label to new socket
+          socket = newSocket;
+          // close old socket
+          oldsocket.close();
+
           clearTimeout(connectionTimeout);
-          console.log("namespace is =>", newSocket.nsp);
+          console.log('namespace is =>', socket.nsp);
+          header.textContent += '--> ' + socket.id;
+          socket.on('event-response', (arg) => {});
+          socket.on('receive message', function (msg) {
+            var item = document.createElement('li');
+            item.textContent = `${new Date().toLocaleString()} --- ${
+              socket.id
+            } ---${socket.id} --- ${JSON.stringify(msg)}`;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+          });
         });
       });
 
-      socket.on("connect", () => {
-        header.textContent += "--> " + socket.id;
-        socket.on("event-response", (arg) => {});
-        socket.on("receive message", function (msg) {
-          var item = document.createElement("li");
+      socket.on('connect', () => {
+        header.textContent += '--> ' + socket.id;
+        socket.on('event-response', (arg) => {});
+        socket.on('receive message', function (msg) {
+          var item = document.createElement('li');
           item.textContent = `${new Date().toLocaleString()} --- ${
             socket.id
           } ---${socket.id} --- ${JSON.stringify(msg)}`;
