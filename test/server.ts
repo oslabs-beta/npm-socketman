@@ -17,13 +17,18 @@ const users: Namespace = io.of('/users');
 const bongo: Namespace = io.of('/bongo');
 const testnsp: Namespace = io.of('/testnsp');
 
-setup(app, io);
+setup(io);
 
 app.get('/', (req: Request, res: Response) => {
   res.sendFile(path.resolve(__dirname, './test.html'));
 });
 
 io.on('connection', (socket: Socket) => {
+  socket.on('join', function (room) {
+    socket.join(room);
+    console.log(socket.rooms);
+  });
+
   // consider this middleware. this will catch all events and then continue through other "specific" listeners
   socket.on('send message', (msg: string): void => {
     io.emit('receive message', msg);
@@ -51,6 +56,10 @@ io.on('connection', (socket: Socket) => {
 });
 
 bongo.on('connection', (socket: Socket) => {
+  socket.on('join', function (room) {
+    socket.join(room);
+    console.log(socket.rooms);
+  });
   // consider this middleware. this will catch all events and then continue through other "specific" listeners
   socket.on('send message', (msg: string): void => {
     io.emit('receive message', msg);
@@ -69,8 +78,9 @@ bongo.on('connection', (socket: Socket) => {
       callback(colorStr);
     }
   );
-  socket.on('event-3', () => {
-    socket.emit('event-response', 'hello client');
+  socket.on('event-3', (roomName) => {
+    console.log(roomName);
+    socket.to(roomName).emit('receive message', 'it worked');
   });
   // console.log(socket.handshake);
   // console.log(socket.rawListeners());
