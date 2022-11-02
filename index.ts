@@ -1,6 +1,6 @@
 import { Server, Socket, Namespace } from "./node_modules/socket.io/dist/index";
 // accept a socket.io instance, and an options object
-function setup(sioInstance: Server, options: {}) {
+function setup(sioInstance: Server) {
   interface eventObj {
     socketId: string;
     eventName: string;

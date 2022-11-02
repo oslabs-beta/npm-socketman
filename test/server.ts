@@ -17,7 +17,7 @@ const users: Namespace = io.of("/users");
 const bongo: Namespace = io.of("/bongo");
 const testnsp: Namespace = io.of("/testnsp");
 
-setup(io, {});
+setup(io);
 
 app.get("/", (req: Request, res: Response) => {
   res.sendFile(path.resolve(__dirname, "./test.html"));
