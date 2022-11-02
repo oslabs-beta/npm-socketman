@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.setup = void 0;
 // accept a socket.io instance, and an options object
 function setup(sioInstance, options) {
@@ -15,7 +15,7 @@ function setup(sioInstance, options) {
             date: +new Date(),
             nsp: nsp,
             rooms: rooms,
-            direction: direction,
+            direction: direction
         };
         console.log("rooms data structure is =>", rooms);
         return obj;
