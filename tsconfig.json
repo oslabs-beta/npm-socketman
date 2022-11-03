@@ -18,5 +18,5 @@
   },
   //compiling index.ts and test.server.ts
   "files": ["index.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "test"]
 }

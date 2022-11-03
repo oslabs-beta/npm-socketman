@@ -1,11 +1,6 @@
 const path = require('path');
 const bcrypt = require('bcrypt');
-import { Application } from 'express';
 import { Server, Socket, Namespace } from './node_modules/socket.io/dist/index';
-
-// accept a socket.io instance, and an options object
-//creates an endpoint on the server, but we could maybe use vanilla node to add an endpoint by somehow accessing the server via the socket io instance that was passed in
-//options typed as empty obj FOR NOW. once we utilize it, we can change it
 
 interface Options {
   namespaceName?: string;
@@ -27,17 +22,7 @@ interface eventObj {
 }
 
 function setup(sioInstance: Server, options: Options) {
-  // update options to defaults if missing
-
-  // create an endpoint on which to access our GUI
-  // express.get("/socketman*", (req, res, next) => {
-  //   // need to figure out how to send our SVELTE APP
-  //   // sveltekit makes this very hard
-  //   // I've seen to use the handler file like express.use(handler)
-  //   // And I've searched for HTML files as well.
-  //   // No idea how to serve the stupid app
-  //   res.sendFile(path.resolve(__dirname, "./index.html"));
-  // });
+  // accept a socket.io instance, and an options object
 
   console.log('welcome to setup');
 
@@ -62,8 +47,6 @@ function setup(sioInstance: Server, options: Options) {
       rooms,
       direction,
     };
-    console.log('rooms data structure is =>', rooms);
-    console.log('nsp is =>', nsp);
     return obj;
   }
   function initAuthMiddleware(adminNamespace: Namespace, options: Options) {
@@ -163,5 +146,4 @@ function setup(sioInstance: Server, options: Options) {
     });
   });
 }
-
-module.exports = setup;
+export { setup };
