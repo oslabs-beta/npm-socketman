@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 const path = require('path');
 const app = require('express')();
 const http = require('http').Server(app);
-const setup = require('../dist/index.js');
+const { setup } = require('../dist/index.js');
 
 // would be best if the dev didn't have to manually allow CORS from our domain
 const io: Server = require('socket.io')(http, {
@@ -21,13 +21,16 @@ const testnsp: Namespace = io.of('/testnsp');
 // pass hash in as password argument
 // in connect gui, dev passes unhashed pass
 
-setup(io, {
-  namespaceName: '/mario',
-  auth: {
-    username: 'admin',
-    password: '$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS', // "changeit" encrypted with bcrypt
-  },
-});
+setup(
+  io
+  //   {
+  //   namespaceName: '/mario',
+  //   auth: {
+  //     username: 'admin',
+  //     password: '$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS', // "changeit" encrypted with bcrypt
+  //   },
+  // }
+);
 
 app.get('/', (req: Request, res: Response) => {
   res.sendFile(path.resolve(__dirname, './test.html'));

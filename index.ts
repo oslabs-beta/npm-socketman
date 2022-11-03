@@ -4,10 +4,12 @@ import { Server, Socket, Namespace } from './node_modules/socket.io/dist/index';
 
 interface Options {
   namespaceName?: string;
-  auth: {
-    username?: string;
-    password?: string;
-  };
+  auth:
+    | false
+    | {
+        username: string;
+        password: string;
+      };
 }
 
 interface eventObj {
@@ -21,7 +23,10 @@ interface eventObj {
   direction: string;
 }
 
-function setup(sioInstance: Server, options: Options) {
+function setup(
+  sioInstance: Server,
+  options: Options = { auth: false, namespaceName: '/admin' }
+) {
   // accept a socket.io instance, and an options object
 
   console.log('welcome to setup');
@@ -49,7 +54,10 @@ function setup(sioInstance: Server, options: Options) {
     };
     return obj;
   }
-  function initAuthMiddleware(adminNamespace: Namespace, options: Options) {
+  function initAuthMiddleware(
+    adminNamespace: Namespace,
+    options: Options = { auth: false }
+  ) {
     console.log('====================');
     if (!options.hasOwnProperty('auth')) {
       console.log(1);
