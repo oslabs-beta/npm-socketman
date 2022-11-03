@@ -17,7 +17,17 @@ const users: Namespace = io.of('/users');
 const bongo: Namespace = io.of('/bongo');
 const testnsp: Namespace = io.of('/testnsp');
 
-setup(io);
+// read password hash from env
+// pass hash in as password argument
+// in connect gui, dev passes unhashed pass
+
+setup(io, {
+  namespaceName: '/mario',
+  auth: {
+    username: 'admin',
+    password: '$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS', // "changeit" encrypted with bcrypt
+  },
+});
 
 app.get('/', (req: Request, res: Response) => {
   res.sendFile(path.resolve(__dirname, './test.html'));

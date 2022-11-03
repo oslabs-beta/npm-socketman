@@ -1,11 +1,32 @@
 const path = require('path');
+const bcrypt = require('bcrypt');
 import { Application } from 'express';
 import { Server, Socket, Namespace } from './node_modules/socket.io/dist/index';
 
 // accept a socket.io instance, and an options object
 //creates an endpoint on the server, but we could maybe use vanilla node to add an endpoint by somehow accessing the server via the socket io instance that was passed in
 //options typed as empty obj FOR NOW. once we utilize it, we can change it
-function setup(sioInstance: Server, options: {}) {
+
+interface Options {
+  namespaceName?: string;
+  auth: {
+    username?: string;
+    password?: string;
+  };
+}
+
+interface eventObj {
+  socketId: string;
+  eventName: string;
+  payload: any[];
+  cb?: Function | null;
+  date: number;
+  nsp: string;
+  rooms: string[];
+  direction: string;
+}
+
+function setup(sioInstance: Server, options: Options) {
   // update options to defaults if missing
 
   // create an endpoint on which to access our GUI
@@ -19,23 +40,14 @@ function setup(sioInstance: Server, options: {}) {
   // });
 
   console.log('welcome to setup');
-  interface eventObj {
-    socketId: string;
-    eventName: string;
-    payload: any[];
-    cb?: Function | null;
-    date: number;
-    nsp: string;
-    rooms: string[];
-    direction: string;
-  }
-  const createEventObj = (
+
+  function createEventObj(
     socketId: string,
     args: any[],
     nsp: string,
     roomSet: Set<string>,
     direction: string
-  ): eventObj => {
+  ): eventObj {
     const cb: Function | null =
       args[args.length - 1] instanceof Function ? args[args.length - 1] : null;
     const payload: any[] = cb ? args.slice(1, -1) : args.slice(1);
@@ -51,19 +63,75 @@ function setup(sioInstance: Server, options: {}) {
       direction,
     };
     console.log('rooms data structure is =>', rooms);
+    console.log('nsp is =>', nsp);
     return obj;
-  };
+  }
+  function initAuthMiddleware(adminNamespace: Namespace, options: Options) {
+    console.log('====================');
+    if (!options.hasOwnProperty('auth')) {
+      console.log(1);
+      console.log('You must have auth');
+      return;
+    }
+    // if auth present but false
+    if (options.auth === false) {
+      console.log(2);
+      console.log('Authentication is disabled, please use with caution');
+    }
+    // if auth present and not false
+    else {
+      console.log(3);
+      const basicAuth = options.auth;
+      // test if valid hash
+      try {
+        console.log(4);
+        bcrypt.getRounds(basicAuth.password);
+      } catch (e) {
+        console.log(5);
+        // console.log if invalid hash
+        console.log('the `password` field must be a valid bcrypt hash');
+        return;
+      }
 
-  // loop through namespaces
+      // if the passed hash from init is valid, we continue to set a middleware
+      // it will trigger on every new socket connection (this will really just be for the gui)
+      console.log(6);
+      adminNamespace.use(async (socket, next) => {
+        console.log(7);
+        // we check the username on the socket connection against what we set for init
+        if (socket.handshake.auth.username === basicAuth.username) {
+          console.log(8);
+          // then we check the socket connection password (plaintext) against what we hashed on init
+          const isMatching = await bcrypt.compare(
+            socket.handshake.auth.password,
+            basicAuth.password
+          );
+          // if no match, console.log failure
+          if (!isMatching) {
+            console.log(9);
+            console.log('invalid credentials!');
+            return;
+          }
+          // if match, console.log and proceed
+          else {
+            console.log(10);
+            console.log('authentication success with valid credentials');
+            next();
+          }
+        }
+        // username doesn't match
+        else {
+          console.log(11);
+          return;
+        }
+      });
+    }
+  }
+
   // create a namespace on the io instance they passed in
-  const adminNamespace: Namespace = sioInstance.of('/admin');
-
-  //   adminNamespace.on('connection', (socket) => {
-  //     console.log(socket.id);
-  //     socket.onAnyOutgoing((...args) => {
-  //     //   console.log('args');
-  //     });
-  //   });
+  const requestedNsp: string = options.namespaceName || '/admin';
+  const adminNamespace: Namespace = sioInstance.of(requestedNsp);
+  initAuthMiddleware(adminNamespace, options);
 
   // get all namespaces on io
   const allNsps: Server['_nsps'] = sioInstance._nsps;

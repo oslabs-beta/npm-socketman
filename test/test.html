@@ -88,6 +88,7 @@
       var joinRoom = document.getElementById('join-room');
 
       event1Btn.addEventListener('click', () => {
+        console.log('ev1 clicked');
         socket.emit('send-message', 'hello world!');
       });
 
@@ -111,7 +112,9 @@
         console.log('clicked nsp');
         const connectTo = document.URL + prompt('What namespace to join?');
         console.log(connectTo);
-        let newSocket = io(connectTo, {});
+        let newSocket = io(connectTo, {
+          auth: { username: 'admin', password: 'changeit' },
+        });
 
         const connectionTimeout = setTimeout(() => {
           newSocket.close();
@@ -133,6 +136,14 @@
           socket.on('receive message', (arg) => {
             console.log(arg);
           });
+
+          socket.on('event_received', function (msg) {
+            console.log('received event as admin');
+          });
+          socket.on('event_sent', function (msg) {
+            console.log('sent event as admin');
+          });
+
           socket.on('receive medssage', function (msg) {
             var item = document.createElement('li');
             item.textContent = `${new Date().toLocaleString()} --- ${
