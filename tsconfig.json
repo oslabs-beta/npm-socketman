@@ -1,22 +1,16 @@
 {
   "compilerOptions": {
-    //js compiled to dist folder
     "outDir": "dist",
-    //sets JS engine to common JS - requiring in info
     "module": "CommonJS",
-    //allows us to use import/export syntac
     "esModuleInterop": true,
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
-    //generate d.ts file
     "declaration": true,
-    //mostly concerned with removing comments from code
     "removeComments": false,
     "sourceMap": true,
     "noImplicitReturns": true,
     "noImplicitThis": true
   },
-  //compiling index.ts and test.server.ts
   "files": ["index.ts"],
   "exclude": ["node_modules", "test"]
 }
